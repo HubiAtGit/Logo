@@ -580,6 +580,7 @@ new_field <- function (size) {
    
    LOGO$path[new_pos,] <- newrows
    LOGO$pos <- LOGO$pos + n
+
 }
 
 

@@ -10,16 +10,18 @@ execute:
   cache: true
 
 website:
-  title: "Hubert Baechli:"
+  title: "LOGO:"
   back-to-top-navigation: true
   page-navigation: true
 
   navbar:
     left:
       - href: index.qmd
-        text: Goal
-      - href: LOGO_Hubi.qmd
-        text: Logo 
+        text: About
+      - href: LOGO_Code.qmd
+        text: Code
+      - href: LOGO_Run.qmd
+        text: Example
 
 format:
   html:

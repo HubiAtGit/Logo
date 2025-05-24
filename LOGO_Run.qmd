@@ -1,0 +1,179 @@
+---
+title: "Logo with Gimmicks"
+author: "Hubert Baechli"
+date: "04-18-2025"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magick)
+library(here)
+```
+
+# Logo
+
+```{r}
+source(here("LOGO_Functions.R"))
+```
+
+
+## Basic Commands
+
+### CLEARSCREEN (CS)
+
+Clear the screen and initializing the field
+
+### HIDETURTLE (HT)
+
+Don't show the turtle cursor.
+
+### SHOWTURTLE (ST)
+
+Show the turtle cursor.
+
+### FORWARD (FD)
+
+Move forward *steps*.
+
+### BACK (BK)
+
+Move back *steps*.
+
+### LEFT (LT)
+
+Turn left this many degrees. Negative degrees work too, they'll turn it right.
+
+### RIGHT (RT)
+
+Turn right this many degrees.
+
+### SETHEADING (SH)
+
+Turn to an absolute heading of *degrees*.
+
+### SETPOS (SP)
+
+Set the position to *x, y* coordinates. These are Cartesian, so 0,0 is the middle of the screen.
+
+### HOME
+
+Move back to the home position.
+
+### SETPOSX (SPX)
+
+Set the horizontal position to *x*.
+
+### SETPOSY (SPY)
+
+Set the vertical position to *y*.
+
+## Gimmicks
+
+### SETPATHCOLOR (SPC)
+
+Set the *color* of the path.
+
+### SETTURTLECOLOR (STC)
+
+Set the *color* of the turtle.
+
+### SETNEWCHUNK (SNC)
+
+Set a new chunk ID for the next Logo-Code
+
+### UNDOCHUNK (UNDO)
+
+Undo the last chunk of Logo-Code
+
+### SETSPEED (SPEED)
+
+Set the speed of the turtle.
+
+### REPLOT
+
+Replot the  whole path
+
+### SAVESCREEN (SAVE)
+
+Save the whole path as a Gif-File with the given *name*
+
+### QUITLOGO (QUIT)
+
+Quit the application end remove the Logo environment
+
+# Run Game
+
+## Example from the homepage
+
+with some fancy shadow and color effects
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("CS SP [-pi/5] [-Sin(PI/2)/2] sPc [black]")
+run_LOGO("REPEAT 20 [RepeaT 180 [FD 1 RT 2] RT 18]")
+run_LOGO("SPEED 100")
+run_LOGO("Home SpC [gREEN] StC [blue]")
+run_LOGO("REPEaT 20.1 [rEPEAT 180 [fD 1 RT 2] RT 18]")
+run_LOGO("UndoChunk")
+run_LOGO("SpC [blue] StC [green]")
+run_LOGO("REPEaT 5 [rEPEAT 180 [fD 1 RT 2] RT 72]")
+run_LOGO("SpC [green] StC [red] rt 18")
+run_LOGO("REPEaT 5 [rEPEAT 180 [fD 1 RT 2] RT 72]")
+run_LOGO("SpC [yellow] rt 18")
+run_LOGO("REPEaT 5 [rEPEAT 180 [fD 1 RT 2] RT 72]")
+run_LOGO("SpC [red] rt 18 ht")
+run_LOGO("REPEaT 5 [rEPEAT 360 [fD 0.5 RT 1] RT 72]")
+```
+
+### Saved Output
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("SPEED 1 saVe [Logo01]")
+```
+
+![](Logo01.gif)
+
+## Other Exercises
+
+Since `n` is also used as a loop variable in my program, handling many other exercises doesn't pose any issues.
+
+<https://softwareprogramming4kids.com/loops-in-logo/>
+
+### Exercise 1:
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("CS")
+run_LOGO("REPEAT 80 [FD [N*2] RT 90]")
+run_LOGO("undo")
+run_LOGO("REPEAT 80 [FD [N*2^(N/40)] RT 90]")
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("SPEED 1 saVe [Logo02]")
+```
+
+![](Logo02.gif)
+
+### Exercise 2:
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("CS REPEAT 50 [ FD [n * 5]  RIGHT 144 ]")
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("SPEED 1 saVe [Logo03]")
+```
+
+![](Logo03.gif)
+
+### Exercise 3:
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("CS REPEAT 150 [ FD [n * 2]  RT 91 ]")
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+run_LOGO("SPEED 1 saVe [Logo04]")
+```
+
+![](Logo04.gif)

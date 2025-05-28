@@ -17,7 +17,6 @@ library(here)
 source(here("LOGO_Functions.R"))
 ```
 
-
 ## Basic Commands
 
 ### CLEARSCREEN (CS)
@@ -92,7 +91,7 @@ Set the speed of the turtle.
 
 ### REPLOT
 
-Replot the  whole path
+Replot the whole path
 
 ### SAVESCREEN (SAVE)
 

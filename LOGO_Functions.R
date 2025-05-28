@@ -8,7 +8,7 @@ library(here)
 ## -----------------------------------------------------------------------------------------------------------------
 CLEARSCREEN <- function () {
   rm(list = ls(envir = LOGO), envir = LOGO)
-  new_field(5)
+  new_field()
 }
 
 
@@ -210,27 +210,29 @@ SNC <- function () {
 ## -----------------------------------------------------------------------------------------------------------------
 UNDOCHUNK <- function () {
   last_chunk <- max(LOGO$path$chunk)
-  if (last_chunk > 1) {
-    LOGO$path <- LOGO$path[LOGO$path$chunk != last_chunk,]
-  } else {
-    CLEARSCREEN() 
-  }
-  
-  LOGO$chunk <- max(LOGO$path$chunk)
-  LOGO$pos <- nrow(LOGO$path)
-  LOGO$heading <- LOGO$path$rad[LOGO$pos] * 180 / pi 
-  LOGO$turtle <- LOGO$path$turtle[LOGO$pos]
-  LOGO$turtle_color <- LOGO$path$turtle_color[LOGO$pos]
-  
-  last_pos <- LOGO$pos
-  while (LOGO$path$path_color[last_pos] == "transparent" && last_pos > 0) {
-    last_pos <- last_pos - 1
-  }
-  if (last_pos == 0) {
-    LOGO$path_color <- "blue"
-  } else {
-    LOGO$path_color <- LOGO$path$path_color[last_pos]
-  }
+  if (last_chunk > 2) {
+    Range <- range(which(LOGO$path$chunk == last_chunk))
+    del_pos <- seq(Range[1],Range[2])
+    n <- length(del_pos)
+    LOGO$path[del_pos,] <- empty_path(n)
+    
+    LOGO$pos <- Range[1] - 1
+    LOGO$chunk <- LOGO$chunk -1
+    LOGO$heading <- LOGO$path$rad[LOGO$pos] * 180 / pi
+    LOGO$turtle <- LOGO$path$turtle[LOGO$pos]
+    LOGO$turtle_color <- LOGO$path$turtle_color[LOGO$pos]
+    
+    last_pos <- LOGO$pos 
+    while (LOGO$path$path_color[last_pos] == "transparent" && last_pos > 0) {
+      last_pos <- last_pos - 1
+    }
+    if (last_pos == 0) {
+      LOGO$path_color <- "blue"
+    } else {
+      LOGO$path_color <- LOGO$path$path_color[last_pos]
+    }
+  } 
+  LOGO$size <-10
   REPLOT()
 }
 
@@ -452,12 +454,14 @@ create_Calls <- function (splited) {
     rename(Call = Code, ID = ID_Repeat, n = n_Repeat ) %>%
     select(Call,ID, n)
   
-  if ( !any(grepl("^UN|SPEED|SAVE|QUIT", Calls$Call)) ) {
+  first_call <- data.frame(Call = "", ID = 1, n = 1)
+  last_call <- data.frame(Call = "", ID = 1, n = 1)
+  
+  if ( !any(grepl("^UNDO|SPEED|SAVE|QUIT", Calls$Call)) ) {
     first_call <- data.frame(Call = "SETNEWCHUNK()", ID = 1, n = 1)
     last_call <- data.frame(Call = "PLOT()", ID = 1, n = 1)
-    Calls <- rbind(first_call, Calls, last_call)
   } 
-  
+  Calls <- rbind(first_call, Calls, last_call)
   Calls
 }
 
@@ -515,38 +519,60 @@ run_prompt <- function (Prompt) {
 
 
 ## -----------------------------------------------------------------------------------------------------------------
-new_field <- function (size) {
-  dir_path <- here("LOGO", "temp")
-  chunk <- 1
-  pos <- 2
-  heading <- 0
-  turtle <- TRUE
-  turtle_color <- "red"
-  path_color <- "blue"
-  speed <- 50
+empty_path <- function(n) {
   path <- data.frame(
-    chunk = rep(1, pos),
-    x = rep(0, pos),
-    y = rep(0, pos),
-    rad = rep(0, pos),
-    path_color = rep("transparent", pos),
-    turtle = c(FALSE, rep(turtle, pos - 1)),
-    turtle_color = rep(turtle_color, pos),
-    stringsAsFactors = FALSE
-  )
-  
-  LOGO$field_name = "LOGO"
-  LOGO$field_dir = here()
-  LOGO$size = abs(size)
-  LOGO$chunk = chunk
-  LOGO$pos = pos
-  LOGO$heading = heading
-  LOGO$turtle = turtle
-  LOGO$turtle_color = turtle_color
-  LOGO$path_color = path_color
-  LOGO$speed = speed
-  LOGO$path = path
+    chunk = rep(0, n),
+    x = rep(NA_real_, n),
+    y = rep(NA_real_, n),
+    rad = rep(NA_real_, n),
+    path_color = rep(NA_character_, n),
+    turtle = rep(NA, n),
+    turtle_color = rep(NA_character_, n),
+    stringsAsFactors = FALSE)
+  path
 }
+
+## -----------------------------------------------------------------------------------------------------------------
+extend_path <- function(n = 20000) {
+  new_rows <- empty_path(n)
+  
+  if (!("path" %in% names(LOGO)) || is.null(LOGO$path)) {
+    LOGO$path <- new_rows
+  } else {
+    new_pos <- seq_len(n) + nrow(LOGO$path)
+    LOGO$path[new_pos, ] <- new_rows
+  }
+}
+
+## -----------------------------------------------------------------------------------------------------------------
+new_field <- function (size = 10) {
+  # LOGO$field_name = "LOGO"
+  # LOGO$field_dir = here()
+  LOGO$size = abs(size)
+  LOGO$chunk <- 1
+  LOGO$pos <- 1
+  LOGO$heading <- 0
+  LOGO$turtle <- TRUE
+  LOGO$turtle_color <- "red"
+  LOGO$path_color <- "blue"
+  LOGO$speed <- 50
+  
+  extend_path()
+  
+  LOGO$path[1, ] <- list(
+    chunk = 1,
+    x = 0,
+    y = 0,
+    rad = 0,
+    path_color = "transparent",
+    turtle = FALSE,
+    turtle_color = "red")
+  
+  SHOWTURTLE()
+  SETNEWCHUNK()
+  
+}
+
 
 
 ## -----------------------------------------------------------------------------------------------------------------
@@ -558,7 +584,7 @@ new_field <- function (size) {
                           turtle = NULL,
                           turtle_color = NULL) {
    
-   n <- max(length(x),1)
+   n <- max(length(x), length(y), 1)
    template <- LOGO$path[LOGO$pos, ]
    
    if (n > 1) {
@@ -664,8 +690,6 @@ plot_stat <- function (stat = NULL) {
 
 ## -----------------------------------------------------------------------------------------------------------------
 PLOT <- function (chunk = TRUE) {
-  invisible(NULL)
-  
   if (chunk) {
     Range <- range(which(LOGO$path$chunk == max(LOGO$chunk)))
     rmin <- max(2,Range[1])
